@@ -1,37 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import Card from '@material-ui/core/Card';
-import Typography from '@material-ui/core/Typography';
-import { CardActions, CardContent, Grid, Switch, Slider, Select, MenuItem } from "@material-ui/core";
+import { Card, Typography, CardActions, CardContent, Grid, Switch, Slider, Select, MenuItem } from "@material-ui/core";
 
 export default function Dashboard() {
     const [quality, setQuality] = useState('normal');
     const [online, setOnline] = useState(false);
     const [volume, setVolume] = useState(20);
+    const [systemNotify, setSystemNotify] = useState([])
 
     const getOnline = () => {
         setOnline(!online)
     }
     const handleQuality = (event) => {
-        event.preventDefault()
+        // event.preventDefault()
         setQuality(event.target.value)
-        console.log(quality)
-        console.log(online)
     }
     const handleVolume = (event, value) => {
         setVolume(value)
-        console.log(volume)
     }
 
-    // useEffect = () => {
-    //     console.log("hello")
-    // }
+    useEffect(()=>{
+        let notification = []
+        if(online){
+            notification.push("you are online")
+        } else{
+            notification.push("Your application is offline. You won't be able to share or stream music to other devices.")
+        }
+
+        if(volume > 80){
+            notification.push("Listening to music at a high volume could cause long-term hearing loss.")
+        }
+
+        if(quality === 'low'){
+            notification.push("Music quality is degraded. Increase quality if your connection allows it.")
+        }
+
+        setSystemNotify(notification)
+
+   }, [ online, volume, quality ])
+
 
     return(
         <div>
             <Typography variant="h4" style={{marginTop:"10pt",marginLeft:"20pt"}}>Welcome User!</Typography>
             <Grid container justify = "center" spacing = {5} style={{marginTop:"30pt"}} >
                 <Grid item xs={12} sm={3}>
-                    <Card elevation={8} style={{transform: 'scale(1)', padding:"5pt", height:"147pt"}}>
+                    <Card  elevation={8} style={{transform: 'scale(1)', padding:"5pt", height:"147pt"}}>
                         <CardContent>
                             <Typography variant="h6">Online Mode</Typography>
                             <Typography variant="body3" color="textSecondary">
@@ -80,11 +93,11 @@ export default function Dashboard() {
                                 Manually control the music quality in the event of poor connection.
                         </Typography>
                         <CardActions style={{paddingTop:"30pt"}} >
-                            <Select 
+                            <Select style={{width:"100vh"}}
                                 value={quality} 
                                 onChange ={handleQuality}
                                 >
-                                <MenuItem value={'low'}>Low/Poor</MenuItem>
+                                <MenuItem value={'low'}>Low</MenuItem>
                                 <MenuItem value={'normal'}>Normal</MenuItem>
                                 <MenuItem value={'high'}>High</MenuItem>
                             </Select>                        
@@ -93,15 +106,22 @@ export default function Dashboard() {
                     </Card>
                 </Grid>
             </Grid>
-            {/* <Grid container justify = "center">
-            <Grid item xs={9}>
-                <Card elevation={8} style={{transform: 'scale(1)'}}>
-                    <CardContent>
-                        <Typography variant="h6">System Notifications:</Typography>
-                    </CardContent>
-                </Card>
+            <Grid container justify = "center" style={{marginTop:"15pt", marginBottom:"10pt"}}>
+                <Grid item xs={9}>
+                    <Card elevation={8} style={{transform: 'scale(1)'}}>
+                        <CardContent>
+                            <Typography variant="h6">System Notifications:</Typography>
+                            <div>
+                                {systemNotify.map((notification, index) => (
+                                    <p style={{margin:"5pt"}} key={index}>
+                                    {notification}
+                                    </p>
+                                ))}
+                            </div>
+                        </CardContent> 
+                    </Card>
+                </Grid>
             </Grid>
-            </Grid> */}
         </div>
     )
 }
